@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartSkills</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --white: #ffffff;
+  --black: #0d0d0d;
+  --green: #1a6b3c;
+  --green-light: #e8f2ec;
+  --green-mid: #2d9656;
+  --blue: #1a3d6b;
+  --blue-light: #e8eef8;
+  --blue-mid: #2d5ca8;
+  --accent: #c8f03c;
+  --accent2: #3cf0c8;
+  --muted: #888880;
+  --border: #e2e0d8;
+  --r: 14px;
+  --r-lg: 22px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--black);
+  min-height: 100vh;
+}
+h1,h2,h3,.nav-logo { font-family: 'Unbounded', sans-serif; }
+
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; animation: fadeIn 0.35s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1.5px solid var(--border);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 62px;
+}
+.nav-logo {
+  font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px;
+  cursor: pointer; color: var(--black);
+}
+.nav-logo span { color: var(--green-mid); }
+.score-pill {
+  background: var(--black); color: var(--accent);
+  border-radius: 30px; padding: 7px 18px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em;
+}
+
+/* HOME */
+.home-hero {
+  padding: 5rem 2rem 4rem;
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+}
+@media(max-width:640px){ .home-hero { grid-template-columns:1fr; padding:3rem 1.5rem 2.5rem; gap:2rem; } }
+.hero-left h1 {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -1.5px; margin-bottom: 1.2rem;
+}
+.hero-left h1 em { font-style: normal; color: var(--green-mid); }
+.hero-left p {
+  font-size: 0.97rem; color: var(--muted);
+  line-height: 1.7; max-width: 340px; margin-bottom: 2rem;
+}
+.hero-tag {
+  display: inline-block; background: var(--accent);
+  color: var(--black); border-radius: 6px;
+  padding: 4px 12px; font-size: 0.75rem; font-weight: 600;
+  margin-bottom: 1.2rem; font-family: 'Unbounded', sans-serif;
+}
+.hero-right { display: flex; flex-direction: column; gap: 12px; }
+
+.main-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.5rem 1.75rem; border-radius: var(--r-lg);
+  border: none; cursor: pointer; font-family: 'Unbounded', sans-serif;
+  font-size: 0.9rem; font-weight: 600; letter-spacing: -0.3px;
+  transition: transform 0.18s, box-shadow 0.18s;
+  text-align: left;
+}
+.main-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+.main-btn:active { transform: scale(0.98); }
+.btn-arrow {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.btn-green-style {
+  background: var(--black); color: var(--accent);
+}
+.btn-green-style .btn-arrow { background: var(--accent); color: var(--black); }
+.btn-blue-style {
+  background: var(--blue); color: #fff;
+}
+.btn-blue-style .btn-arrow { background: rgba(255,255,255,0.2); color: #fff; }
+.btn-label { font-size: 0.9rem; font-weight: 600; }
+.btn-sub { font-size: 0.72rem; opacity: 0.6; margin-top: 3px; font-family: 'Inter', sans-serif; font-weight: 400; }
+
+/* ACHIEVEMENTS */
+.ach-section {
+  max-width: 900px; margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+@media(max-width:640px){ .ach-section { padding: 0 1.5rem 3rem; } }
+.section-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.7rem; font-weight: 600; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;
+}
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+.ach-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 1rem 0.75rem;
+  text-align: center; transition: all 0.25s;
+}
+.ach-card.unlocked { border-color: var(--black); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.ach-card.unlocked.col-green { border-color: var(--green-mid); background: var(--green-light); }
+.ach-card.unlocked.col-blue { border-color: var(--blue-mid); background: var(--blue-light); }
+.ach-card.unlocked.col-gold { border-color: #b8860b; background: #fefae8; }
+.ach-icon-wrap {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg); margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ach-card.unlocked.col-green .ach-icon-wrap { background: var(--green-light); }
+.ach-card.unlocked.col-blue .ach-icon-wrap { background: var(--blue-light); }
+.ach-card.unlocked.col-gold .ach-icon-wrap { background: #fefae8; }
+.ach-svg { width: 20px; height: 20px; opacity: 0.25; }
+.ach-card.unlocked .ach-svg { opacity: 1; }
+.ach-name { font-size: 0.7rem; font-weight: 600; color: var(--muted); line-height: 1.3; }
+.ach-card.unlocked .ach-name { color: var(--black); }
+
+/* SECTION */
+.sec-wrap { max-width: 800px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+@media(max-width:640px){ .sec-wrap { padding: 1.5rem 1.25rem 3rem; } }
+.sec-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; }
+.sec-top h2 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; }
+.back-btn {
+  background: none; border: 1.5px solid var(--border);
+  border-radius: 30px; padding: 7px 18px;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem;
+  color: var(--muted); cursor: pointer; transition: all 0.15s;
+}
+.back-btn:hover { border-color: var(--black); color: var(--black); }
+
+/* PROGRESS */
+.prog-wrap { margin-bottom: 1.75rem; }
+.prog-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.prog-row span { font-size: 0.78rem; font-weight: 500; color: var(--muted); }
+.prog-row strong { font-size: 0.78rem; font-weight: 700; color: var(--black); }
+.prog-track { background: var(--border); border-radius: 4px; height: 5px; }
+.prog-fill { height: 5px; border-radius: 4px; transition: width 0.5s ease; }
+.fill-green { background: var(--green-mid); }
+.fill-blue { background: var(--blue-mid); }
+
+/* TABS */
+.tabs-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.75rem;
+}
+.tab {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 30px; padding: 7px 16px;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem;
+  color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.tab:hover { color: var(--black); border-color: #bbb; }
+.tab.on-green { background: var(--black); color: var(--accent); border-color: var(--black); }
+.tab.on-blue { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* CARDS */
+.card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 1.75rem;
+  margin-bottom: 1rem;
+}
+.card-label {
+  font-family: 'Unbounded', sans-serif; font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;
+  padding: 4px 10px; border-radius: 6px; display: inline-block;
+}
+.label-green { background: var(--green-light); color: var(--green); }
+.label-blue { background: var(--blue-light); color: var(--blue); }
+.label-quiz { background: #fef9e7; color: #a07800; border: 1px solid #f0d060; }
+.label-game { background: #f0ffe8; color: var(--green); }
+.label-scene { background: var(--blue-light); color: var(--blue); }
+.card h3 { font-family: 'Unbounded', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.9rem; letter-spacing: -0.3px; }
+.card p { font-size: 0.9rem; line-height: 1.7; color: #555; }
+
+ul.pts { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; margin-top: 0.75rem; }
+ul.pts li { font-size: 0.88rem; color: #555; padding-left: 18px; position: relative; line-height: 1.55; }
+ul.pts li::before { content: '—'; position: absolute; left: 0; color: var(--muted); }
+
+.terms { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem; }
+@media(max-width:420px){ .terms { grid-template-columns: 1fr; } }
+.term { background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--r); padding: 10px 12px; }
+.term-t { font-size: 0.78rem; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+.term-d { font-size: 0.73rem; color: var(--muted); line-height: 1.45; }
+
+/* QUIZ */
+.qcard { background: var(--white); border: 1.5px solid #e8dfa0; border-radius: var(--r-lg); padding: 1.75rem; margin-bottom: 1rem; }
+.q-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; line-height: 1.55; }
+.q-opts { display: flex; flex-direction: column; gap: 7px; }
+.qopt {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 11px 16px;
+  font-family: 'Inter', sans-serif; font-size: 0.86rem; font-weight: 500;
+  color: var(--black); cursor: pointer; text-align: left;
+  transition: all 0.12s;
+}
+.qopt:hover:not(:disabled) { background: var(--white); border-color: #999; transform: translateX(2px); }
+.qopt.correct { background: var(--green-light); border-color: var(--green-mid); color: var(--green); font-weight: 600; }
+.qopt.wrong { background: #feeaea; border-color: #e05050; color: #b03030; font-weight: 600; }
+.qopt:disabled { cursor: default; }
+.q-fb { margin-top: 10px; padding: 10px 14px; border-radius: var(--r); font-size: 0.82rem; font-weight: 500; display: none; line-height: 1.5; }
+.q-fb.ok { background: var(--green-light); border: 1.5px solid var(--green-mid); color: var(--green); display: block; }
+.q-fb.no { background: #feeaea; border: 1.5px solid #e05050; color: #b03030; display: block; }
+.q-next {
+  margin-top: 12px; background: var(--black); color: var(--accent);
+  border: none; border-radius: 30px; padding: 9px 22px;
+  font-family: 'Unbounded', sans-serif; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; display: none; letter-spacing: 0.02em;
+  transition: opacity 0.15s;
+}
+.q-next:hover { opacity: 0.85; }
+.q-next.show { display: inline-block; }
+
+/* BUDGET GAME */
+.bgame { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r-lg); padding: 1.75rem; margin-bottom: 1rem; }
+.brow { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.brow .bl { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+.brow .bv { font-family: 'Unbounded', sans-serif; font-size: 0.9rem; font-weight: 600; }
+.btrack { background: var(--bg); border: 1.5px solid var(--border); border-radius: 6px; height: 8px; margin-bottom: 1.25rem; overflow: hidden; }
+.bfill { height: 8px; border-radius: 4px; background: var(--green-mid); transition: width 0.3s, background 0.3s; }
+.bfill.warn { background: #e09000; }
+.bfill.over { background: #e04040; }
+.bgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+@media(max-width:400px){ .bgrid { grid-template-columns: 1fr; } }
+.bitem {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 10px 12px; cursor: pointer;
+  transition: all 0.15s; text-align: center;
+}
+.bitem:hover { border-color: #aaa; }
+.bitem.on { border-color: var(--green-mid); background: var(--green-light); }
+.bitem.over { border-color: #e04040; background: #feeaea; }
+.bitem-name { font-size: 0.78rem; font-weight: 600; color: var(--black); margin-bottom: 2px; }
+.bitem-cost { font-size: 0.82rem; font-weight: 700; color: var(--green-mid); }
+.bitem.over .bitem-cost { color: #e04040; }
+.bres { padding: 11px 14px; border-radius: var(--r); font-size: 0.84rem; font-weight: 600; display: none; margin-top: 4px; }
+.bres.show { display: block; }
+.bres.ok { background: var(--green-light); border: 1.5px solid var(--green-mid); color: var(--green); }
+.bres.bad { background: #feeaea; border: 1.5px solid #e05050; color: #b03030; }
+.bres.warn { background: #fef9e7; border: 1.5px solid #d4a800; color: #8a6e00; }
+.breset {
+  margin-top: 10px; background: none; border: 1.5px solid var(--border);
+  border-radius: 30px; padding: 6px 16px;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem;
+  color: var(--muted); cursor: pointer; transition: all 0.15s;
+}
+.breset:hover { color: var(--black); border-color: #aaa; }
+
+/* SCENARIO */
+.scard { background: var(--white); border: 1.5px solid var(--blue-mid); border-radius: var(--r-lg); padding: 1.75rem; margin-bottom: 1rem; }
+.scard h3 { font-family: 'Unbounded', sans-serif; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.6rem; letter-spacing: -0.3px; }
+.sq { font-size: 0.88rem; color: #555; line-height: 1.65; margin-bottom: 1rem; }
+.sopts { display: flex; flex-direction: column; gap: 7px; }
+.sopt {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 11px 16px;
+  font-family: 'Inter', sans-serif; font-size: 0.86rem; font-weight: 500;
+  color: var(--black); cursor: pointer; text-align: left; transition: all 0.12s;
+}
+.sopt:hover:not(:disabled) { background: var(--blue-light); border-color: var(--blue-mid); transform: translateX(2px); }
+.sopt.best { background: var(--green-light); border-color: var(--green-mid); color: var(--green); font-weight: 600; }
+.sopt.mid { background: #fef9e7; border-color: #d4a800; color: #7a6000; font-weight: 600; }
+.sopt.bad { background: #feeaea; border-color: #e05050; color: #b03030; font-weight: 600; }
+.sfb { margin-top: 10px; padding: 10px 14px; border-radius: var(--r); font-size: 0.82rem; font-weight: 500; display: none; line-height: 1.5; }
+.sfb.ok { background: var(--green-light); border: 1.5px solid var(--green-mid); color: var(--green); display: block; }
+.sfb.mid { background: #fef9e7; border: 1.5px solid #d4a800; color: #7a6000; display: block; }
+.sfb.no { background: #feeaea; border: 1.5px solid #e05050; color: #b03030; display: block; }
+
+
+/* LEADERBOARD */
+.lb-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 1.25rem;
+}
+.lb-head {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-bottom:1rem;
+}
+.lb-title {
+  font-family:'Unbounded',sans-serif; font-size:.9rem; font-weight:600;
+}
+.lb-sub { font-size:.72rem; color:var(--muted); margin-top:3px; }
+.lb-list { display:flex; flex-direction:column; gap:7px; }
+.lb-row {
+  display:grid; grid-template-columns:34px 1fr auto;
+  align-items:center; gap:10px;
+  background:var(--bg); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:10px 12px;
+}
+.lb-row.me { background:var(--green-light); border-color:var(--green-mid); }
+.lb-rank {
+  font-family:'Unbounded',sans-serif; font-size:.72rem; font-weight:700;
+  color:var(--muted); text-align:center;
+}
+.lb-row:nth-child(1) .lb-rank { color:#b8860b; }
+.lb-name { font-size:.82rem; font-weight:600; }
+.lb-done { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.lb-score {
+  font-family:'Unbounded',sans-serif; font-size:.75rem; font-weight:700;
+}
+.lb-note {
+  margin-top:10px; font-size:.68rem; color:var(--muted); line-height:1.45;
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--black); color: var(--white);
+  border-radius: var(--r); padding: 12px 20px;
+  font-size: 0.85rem; font-weight: 600;
+  transform: translateY(80px); opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  max-width: 260px;
+}
+.toast.show { transform: none; opacity: 1; }
+
+@media(max-width:640px){
+  nav { padding: 0 1.25rem; }
+  .home-hero { padding: 2.5rem 1.25rem 2rem; }
+  .ach-section { padding: 0 1.25rem 2.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="goHome()">Smart<span>Skills</span></div>
+  <div class="score-pill"><span id="score-display">0</span> баллов</div>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="home-hero">
+    <div class="hero-left">
+      <div class="hero-tag">Казахстан · 13–17 лет</div>
+      <h1>Финансы.<br>Право.<br><em>Просто.</em></h1>
+      <p>Учись разбираться в деньгах и законах — без скуки. Проходи темы, зарабатывай баллы, открывай достижения.</p>
+    </div>
+    <div class="hero-right">
+      <button class="main-btn btn-green-style" onclick="openSection('fin')">
+        <div>
+          <div class="btn-label">Финансовая грамотность</div>
+          <div class="btn-sub">5 тем · квизы · игра с бюджетом</div>
+        </div>
+        <div class="btn-arrow">→</div>
+      </button>
+      <button class="main-btn btn-blue-style" onclick="openSection('law')">
+        <div>
+          <div class="btn-label">Правовая грамотность</div>
+          <div class="btn-sub">4 темы · сценарии · квизы</div>
+        </div>
+        <div class="btn-arrow">→</div>
+      </button>
+    </div>
+  </div>
+  <div class="ach-section">
+    <div class="section-label">Достижения</div>
+    <div class="ach-grid" id="ach-grid"></div>
+  </div>
+  <div class="ach-section">
+    <div class="section-label">Рейтинг решающих</div>
+    <div class="lb-card">
+      <div class="lb-head">
+        <div>
+          <div class="lb-title">Таблица лидеров</div>
+          <div class="lb-sub">Как в рейтинге шахмат — чем больше баллов, тем выше место</div>
+        </div>
+        <div class="score-pill" style="white-space:nowrap"><span id="lb-my-rank">#—</span></div>
+      </div>
+      <div class="lb-list" id="leaderboard"></div>
+      <div class="lb-note">Демо-рейтинг для текущей версии сайта. Твой результат сохраняется в браузере.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FINANCE -->
+<div id="fin" class="screen">
+  <div class="sec-wrap">
+    <div class="sec-top">
+      <h2>Финансовая грамотность</h2>
+      <button class="back-btn" onclick="goHome()">← Назад</button>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-row"><span>Прогресс</span><strong id="fin-pv">0%</strong></div>
+      <div class="prog-track"><div class="prog-fill fill-green" id="fin-pb" style="width:0%"></div></div>
+    </div>
+    <div class="tabs-row">
+      <button class="tab on-green" onclick="showTopic('fin','budget',this)">Бюджет</button>
+      <button class="tab" onclick="showTopic('fin','saving',this)">Сбережения</button>
+      <button class="tab" onclick="showTopic('fin','economy',this)">Экономия</button>
+      <button class="tab" onclick="showTopic('fin','credit',this)">Кредиты</button>
+      <button class="tab" onclick="showTopic('fin','invest',this)">Инвестиции</button>
+    </div>
+    <div id="fin-content"></div>
+  </div>
+</div>
+
+<!-- LAW -->
+<div id="law" class="screen">
+  <div class="sec-wrap">
+    <div class="sec-top">
+      <h2>Правовая грамотность</h2>
+      <button class="back-btn" onclick="goHome()">← Назад</button>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-row"><span>Прогресс</span><strong id="law-pv">0%</strong></div>
+      <div class="prog-track"><div class="prog-fill fill-blue" id="law-pb" style="width:0%"></div></div>
+    </div>
+    <div class="tabs-row">
+      <button class="tab on-blue" onclick="showTopic('law','rights',this)">Права подростков</button>
+      <button class="tab" onclick="showTopic('law','admin',this)">Адм. ответственность</button>
+      <button class="tab" onclick="showTopic('law','internet',this)">Безопасность в сети</button>
+      <button class="tab" onclick="showTopic('law','everyday',this)">Законы жизни</button>
+    </div>
+    <div id="law-content"></div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:2rem 1.5rem;border-top:1.5px solid #e2e0d8;margin-top:2rem;">
+  <p style="font-size:0.78rem;color:#888880;font-family:'Inter',sans-serif;">Создала <strong style="color:#0d0d0d">Алина Киреева</strong> · КГУ «Экономический Лицей» · 2026</p>
+</footer>
+
+<script>
+// STATE
+let score = parseInt(localStorage.getItem('ss2_score')||'0');
+let done = JSON.parse(localStorage.getItem('ss2_done')||'{}');
+let ach = JSON.parse(localStorage.getItem('ss2_ach')||'{}');
+
+const ACH = [
+  {id:'first',name:'Первый шаг',col:'col-green',svg:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',cond:()=>Object.keys(done).length>=1},
+  {id:'fin3',name:'Финансист',col:'col-green',svg:'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6',cond:()=>['budget','saving','economy','credit','invest'].filter(t=>done['fin_'+t]).length>=3},
+  {id:'law2',name:'Юрист',col:'col-blue',svg:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',cond:()=>['rights','admin','internet','everyday'].filter(t=>done['law_'+t]).length>=2},
+  {id:'s100',name:'Сотня',col:'col-gold',svg:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',cond:()=>score>=100},
+  {id:'budgame',name:'Мастер бюджета',col:'col-green',svg:'M2 20h20M6 20V10M12 20V4M18 20v-6',cond:()=>done['game_budget']},
+  {id:'s300',name:'На полпути',col:'col-blue',svg:'M18 20V10M12 20V4M6 20v-6',cond:()=>score>=300},
+  {id:'allfin',name:'Экономист',col:'col-gold',svg:'M22 12h-4l-3 9L9 3l-3 9H2',cond:()=>['budget','saving','economy','credit','invest'].every(t=>done['fin_'+t])},
+  {id:'alllaw',name:'Правовед',col:'col-blue',svg:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',cond:()=>['rights','admin','internet','everyday'].every(t=>done['law_'+t])},
+];
+
+function save(){
+  localStorage.setItem('ss2_score',score);
+  localStorage.setItem('ss2_done',JSON.stringify(done));
+  localStorage.setItem('ss2_ach',JSON.stringify(ach));
+}
+
+function addScore(n){
+  score+=n; document.getElementById('score-display').textContent=score;
+  save(); checkAch(); updateProg(); renderLeaderboard();
+  toast('+'+n+' баллов');
+}
+
+function checkAch(){
+  ACH.forEach(a=>{
+    if(!ach[a.id]&&a.cond()){
+      ach[a.id]=true; save(); renderAch();
+      setTimeout(()=>toast('Достижение: '+a.name),600);
+    }
+  });
+  renderAch();
+}
+
+function renderAch(){
+  const g=document.getElementById('ach-grid'); if(!g)return;
+  g.innerHTML=ACH.map(a=>`
+    <div class="ach-card ${ach[a.id]?'unlocked '+a.col:''}">
+      <div class="ach-icon-wrap">
+        <svg class="ach-svg" viewBox="0 0 24 24" fill="none" stroke="${ach[a.id]?(a.col==='col-green'?'#2d9656':a.col==='col-blue'?'#2d5ca8':'#b8860b'):'#aaa'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="${a.svg}"/>
+        </svg>
+      </div>
+      <div class="ach-name">${a.name}</div>
+    </div>`).join('');
+}
+
+function updateProg(){
+  const ft=['budget','saving','economy','credit','invest'];
+  const lt=['rights','admin','internet','everyday'];
+  const fp=Math.round(ft.filter(t=>done['fin_'+t]).length/ft.length*100);
+  const lp=Math.round(lt.filter(t=>done['law_'+t]).length/lt.length*100);
+  ['fin-pb','fin-pv'].forEach((id,i)=>{const e=document.getElementById(id);if(e){if(i===0)e.style.width=fp+'%';else e.textContent=fp+'%';}});
+  ['law-pb','law-pv'].forEach((id,i)=>{const e=document.getElementById(id);if(e){if(i===0)e.style.width=lp+'%';else e.textContent=lp+'%';}});
+}
+
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(){ showScreen('home'); renderAch(); updateProg(); }
+function openSection(sec){
+  showScreen(sec); updateProg();
+  const first=sec==='fin'?'budget':'rights';
+  const btn=document.querySelector('#'+sec+' .tabs-row .tab');
+  showTopic(sec,first,btn);
+}
+function showTopic(sec,topic,btn){
+  const ac=sec==='fin'?'on-green':'on-blue';
+  document.querySelectorAll('#'+sec+' .tabs-row .tab').forEach(b=>b.classList.remove('on-green','on-blue'));
+  if(btn)btn.classList.add(ac);
+  const el=document.getElementById(sec+'-content');
+  el.innerHTML=sec==='fin'?renderFin(topic):renderLaw(topic);
+  if(!done[sec+'_'+topic]){done[sec+'_'+topic]=true;save();updateProg();checkAch();}
+  attachBudget();
+}
+
+// QUIZ STATE
+const QS={};   // {key: {i, qs, sec, topic}}
+function qKey(sec,topic){return sec+'_'+topic+'_q';}
+
+function quiz(sec,topic,qs){
+  const k=qKey(sec,topic);
+  if(!QS[k])QS[k]={i:0};
+  QS[k].qs=qs; QS[k].sec=sec; QS[k].topic=topic;
+  const s=QS[k];
+  const q=qs[s.i];
+  if(!q)return '';
+  return `<div class="qcard" id="qc-${k}">
+    <div class="card-label label-quiz">Вопрос ${s.i+1} из ${qs.length}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="q-opts">
+      ${q.opts.map((o,i)=>`<button class="qopt" onclick="ansQ('${k}',${i})">${o}</button>`).join('')}
+    </div>
+    <div class="q-fb" id="qfb-${k}"></div>
+    <button class="q-next" id="qnxt-${k}" onclick="nextQ('${k}')">Следующий вопрос</button>
+  </div>`;
+}
+
+function ansQ(k,chosen){
+  const s=QS[k]; if(!s)return;
+  const q=s.qs[s.i];
+  const correct=q.a;
+  const fb=document.getElementById('qfb-'+k);
+  if(chosen===correct){
+    document.querySelectorAll(`#qc-${k} .qopt`).forEach((o,i)=>{
+      o.disabled=true;
+      if(i===correct)o.classList.add('correct');
+    });
+    fb.className='q-fb ok'; fb.textContent='Правильно. '+q.e;
+    addScore(10);
+    if(s.i<s.qs.length-1)document.getElementById('qnxt-'+k).classList.add('show');
+  } else {
+    const wrongBtn=document.querySelectorAll(`#qc-${k} .qopt`)[chosen];
+    wrongBtn.classList.add('wrong');
+    fb.className='q-fb no'; fb.textContent='Неверно — попробуй ещё раз.';
+    setTimeout(()=>wrongBtn.classList.remove('wrong'),900);
+  }
+}
+
+function nextQ(k){
+  const s=QS[k]; if(!s)return;
+  s.i++;
+  const el=document.getElementById(s.sec+'-content');
+  el.innerHTML=s.sec==='fin'?renderFin(s.topic):renderLaw(s.topic);
+  attachBudget();
+  const qel=document.getElementById('qc-'+k);
+  if(qel)qel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+const SC={};
+function scenario(id,title,q,opts){
+  SC[id]=opts;
+  return `<div class="scard" id="sc-${id}">
+    <div class="card-label label-scene">Сценарий</div>
+    <h3>${title}</h3>
+    <p class="sq">${q}</p>
+    <div class="sopts">
+      ${opts.map((o,i)=>`<button class="sopt" onclick="pickSc('${id}',${i},this)">${o.t}</button>`).join('')}
+    </div>
+    <div class="sfb" id="sfb-${id}"></div>
+  </div>`;
+}
+function pickSc(id,idx,btn){
+  const o=SC[id][idx]; if(!o)return;
+  btn.closest('.sopts').querySelectorAll('.sopt').forEach(b=>b.disabled=true);
+  btn.classList.add(o.r);
+  const fb=document.getElementById('sfb-'+id);
+  fb.className='sfb '+(o.r==='best'?'ok':o.r==='mid'?'mid':'no');
+  fb.textContent=o.f;
+  if(o.r==='best')addScore(15);
+  else if(o.r==='mid')addScore(5);
+}
+
+// BUDGET GAME
+const EXPS=[
+  {n:'Проездной',c:3000},{n:'Еда вне дома',c:5000},{n:'Учебники',c:4000},
+  {n:'Игры / подписки',c:3500},{n:'Одежда',c:6000},{n:'Кафе с друзьями',c:2500},
+  {n:'Кино',c:2000},{n:'Витамины / аптека',c:1500}
+];
+const BLIMIT=15000, BGOAL=3000;
+let bpick=new Set(), bdone=false;
+
+function budgetGameHtml(){
+  return `<div class="bgame" id="bgame">
+    <div class="card-label label-game">Игра: Распредели бюджет</div>
+    <p style="font-size:0.84rem;color:#666;margin-bottom:1.25rem;line-height:1.6">У тебя <strong>15 000 ₸</strong> на месяц. Выбери расходы так, чтобы отложить минимум <strong>3 000 ₸</strong>.</p>
+    <div class="brow">
+      <span class="bl">Потрачено</span>
+      <span class="bv" id="bspent">0 ₸</span>
+    </div>
+    <div class="brow" style="margin-bottom:10px">
+      <span class="bl">Остаток</span>
+      <span class="bv" id="bremain" style="color:var(--green-mid)">${BLIMIT.toLocaleString()} ₸</span>
+    </div>
+    <div class="btrack"><div class="bfill" id="bbar" style="width:0%"></div></div>
+    <div class="bgrid" id="bgrid">
+      ${EXPS.map((e,i)=>`<div class="bitem" id="bi${i}" onclick="toggleB(${i})">
+        <div class="bitem-name">${e.n}</div>
+        <div class="bitem-cost">${e.c.toLocaleString()} ₸</div>
+      </div>`).join('')}
+    </div>
+    <div class="bres" id="bres"></div>
+    <button class="breset" onclick="resetB()">Сбросить</button>
+  </div>`;
+}
+
+function attachBudget(){
+  bpick=new Set(); bdone=false; updateB();
+}
+function toggleB(i){
+  bpick.has(i)?bpick.delete(i):bpick.add(i);
+  updateB();
+}
+function updateB(){
+  let spent=0; bpick.forEach(i=>spent+=EXPS[i].c);
+  const remain=BLIMIT-spent;
+  const pct=Math.min(100,Math.round(spent/BLIMIT*100));
+  const bs=document.getElementById('bspent');
+  const br=document.getElementById('bremain');
+  const bb=document.getElementById('bbar');
+  const bres=document.getElementById('bres');
+  if(!bs)return;
+  bs.textContent=spent.toLocaleString()+' ₸';
+  br.textContent=remain.toLocaleString()+' ₸';
+  br.style.color=remain>=BGOAL?'var(--green-mid)':'#e04040';
+  bb.style.width=pct+'%';
+  bb.className='bfill'+(pct>80?' warn':'')+(pct>=100?' over':'');
+  EXPS.forEach((_,i)=>{
+    const el=document.getElementById('bi'+i); if(!el)return;
+    el.classList.toggle('on',bpick.has(i)&&spent<=BLIMIT);
+    el.classList.toggle('over',bpick.has(i)&&spent>BLIMIT);
+  });
+  if(spent>BLIMIT){
+    bres.className='bres show bad';
+    bres.textContent='Превышение на '+(spent-BLIMIT).toLocaleString()+' ₸. Убери что-нибудь.';
+  } else if(remain>=BGOAL&&bpick.size>0){
+    bres.className='bres show ok';
+    bres.textContent='Отлично! Потрачено '+spent.toLocaleString()+' ₸, откладываешь '+remain.toLocaleString()+' ₸.';
+    if(!bdone){bdone=true;done['game_budget']=true;save();addScore(20);checkAch();}
+  } else if(bpick.size>0){
+    bres.className='bres show warn';
+    bres.textContent='Откладываешь '+remain.toLocaleString()+' ₸ — нужно минимум 3 000 ₸.';
+    bdone=false;
+  } else {
+    bres.className='bres';
+  }
+}
+function resetB(){bpick=new Set();bdone=false;updateB();document.getElementById('bres').className='bres';}
+
+// FINANCE CONTENT
+function renderFin(t){
+  const k=qKey('fin',t);
+  if(!QS[k])QS[k]={i:0};
+  const map={
+    budget:`
+      <div class="card">
+        <div class="card-label label-green">Теория</div>
+        <h3>Личный бюджет</h3>
+        <p>Бюджет — это план доходов и расходов. Он помогает понять, сколько денег приходит, куда уходит и сколько остаётся. Планирование бюджета — первый шаг к финансовой независимости.</p>
+        <ul class="pts">
+          <li>Доходы: карманные деньги, подработка, стипендия, подарки</li>
+          <li>Расходы: еда, транспорт, развлечения, одежда, связь</li>
+          <li>Остаток = Доходы − Расходы. Это твои потенциальные сбережения</li>
+          <li>Правило 50/30/20: 50% — нужды, 30% — желания, 20% — сбережения</li>
+          <li>Фиксируй расходы хотя бы неделю — увидишь, куда уходят деньги</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">Доход</div><div class="term-d">Деньги, которые ты получаешь: зарплата, стипендия, карманные</div></div>
+          <div class="term"><div class="term-t">Расход</div><div class="term-d">Деньги, которые ты тратишь на товары и услуги</div></div>
+          <div class="term"><div class="term-t">Профицит</div><div class="term-d">Доходы больше расходов — хорошая ситуация</div></div>
+          <div class="term"><div class="term-t">Дефицит</div><div class="term-d">Расходы больше доходов — срочно пересматривай план</div></div>
+        </div>
+      </div>
+      ${budgetGameHtml()}
+      ${quiz('fin','budget',[
+        {q:'По правилу 50/30/20 какую долю дохода рекомендуется откладывать?',opts:['10%','20%','30%','50%'],a:1,e:'50% — необходимые расходы, 30% — желания, 20% — сбережения.'},
+        {q:'Что означает дефицит бюджета?',opts:['Доходы больше расходов','Расходы больше доходов','Деньги на счёте в банке','Отсутствие планирования'],a:1,e:'Дефицит — расходы превышают доходы. Это ведёт к долгам.'},
+        {q:'С чего начать планирование бюджета?',opts:['Купить нужные вещи','Взять кредит','Подсчитать все доходы','Потратить на желания'],a:2,e:'Сначала нужно знать, сколько денег есть — только потом планировать расходы.'},
+      ])}`,
+    saving:`
+      <div class="card">
+        <div class="card-label label-green">Теория</div>
+        <h3>Сбережения и финансовая подушка</h3>
+        <p>Сбережения — деньги, которые ты откладываешь на будущее. Финансовая подушка — запас на 3–6 месяцев расходов. Она защищает тебя при непредвиденных ситуациях: болезнь, поломка техники, потеря дохода.</p>
+        <ul class="pts">
+          <li>Начинай откладывать хотя бы 10% от любого дохода</li>
+          <li>Храни сбережения отдельно от повседневных денег — на вкладе</li>
+          <li>В Казахстане вклады застрахованы государством до 20 млн тенге</li>
+          <li>Сложные проценты: чем раньше начнёшь — тем больше накопишь</li>
+          <li>Цель: накопить подушку, потом инвестировать остальное</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">Депозит (вклад)</div><div class="term-d">Деньги в банке под проценты. Банк платит тебе за их хранение</div></div>
+          <div class="term"><div class="term-t">Процентная ставка</div><div class="term-d">Сколько % банк заплатит тебе за год хранения</div></div>
+          <div class="term"><div class="term-t">Инфляция</div><div class="term-d">Рост цен. Если ставка ниже инфляции — деньги теряют ценность</div></div>
+          <div class="term"><div class="term-t">Сложный процент</div><div class="term-d">Проценты начисляются на проценты — деньги растут быстрее</div></div>
+        </div>
+      </div>
+      ${quiz('fin','saving',[
+        {q:'Что такое финансовая подушка безопасности?',opts:['Красивый кошелёк','Запас денег на 3–6 месяцев расходов','Кредитная карта','Акции компаний'],a:1,e:'Финансовая подушка — резерв на непредвиденные ситуации: болезнь, потеря работы и другие.'},
+        {q:'До какой суммы застрахованы вклады в банках Казахстана?',opts:['1 млн тенге','5 млн тенге','20 млн тенге','Не застрахованы'],a:2,e:'Казахстанский фонд гарантирования депозитов страхует вклады до 20 млн тенге.'},
+        {q:'Когда лучше всего начинать копить?',opts:['После 30 лет','После 25 лет','С 18 лет','Как можно раньше'],a:3,e:'Чем раньше начнёшь — тем сильнее сложный процент. Даже в 14–17 лет можно начать!'},
+      ])}`,
+    economy:`
+      <div class="card">
+        <div class="card-label label-green">Теория</div>
+        <h3>Умная экономия</h3>
+        <p>Экономия — не значит во всём себе отказывать. Это осознанные траты: сравнивать цены, избегать импульсивных покупок, выбирать качество, а не бренд.</p>
+        <ul class="pts">
+          <li>Составляй список покупок — он снижает траты в среднем на 20%</li>
+          <li>Сравнивай цены перед крупной покупкой в 2–3 магазинах</li>
+          <li>Правило 24 часов: подожди день перед незапланированной покупкой</li>
+          <li>Скидки выгодны только если ты и так собирался купить эту вещь</li>
+          <li>Проверь подписки — сколько ты реально используешь из них?</li>
+          <li>Покупай вне сезона: зимнюю одежду летом, летнюю — зимой</li>
+        </ul>
+      </div>
+      ${quiz('fin','economy',[
+        {q:'Ты видишь акцию "Купи 3, получи 1 бесплатно". Когда это выгодно?',opts:['Всегда, раз дают бесплатно','Если ты и так собирался купить этот товар','Никогда','Только в крупных магазинах'],a:1,e:'Акция выгодна только когда ты планировал купить товар. Иначе тратишь больше, чем нужно.'},
+        {q:'Что такое импульсивная покупка?',opts:['Покупка по заранее составленному списку','Незапланированная покупка под влиянием эмоций','Выгодная сделка','Оптовая закупка'],a:1,e:'Импульсивные покупки — главный враг бюджета. Правило 24 часов помогает их сократить.'},
+        {q:'Как лучше купить зимнюю куртку дешевле?',opts:['Зимой по акции','Летом в межсезонье','Осенью в начале сезона','Цена всегда одинакова'],a:1,e:'Сезонные товары дешевле всего вне сезона — летом на зимние товары скидки до 50–70%.'},
+      ])}`,
+    credit:`
+      <div class="card">
+        <div class="card-label label-green">Теория</div>
+        <h3>Кредиты и займы</h3>
+        <p>Кредит — деньги, взятые у банка с обязательством вернуть их с процентами. Правильно использованный кредит помогает, неправильный ведёт к долговой яме.</p>
+        <ul class="pts">
+          <li>В Казахстане официально взять кредит можно только с 18 лет</li>
+          <li>МФО (микрозаймы) могут начислять до 700% годовых — крайне опасно</li>
+          <li>ГЭСВ — реальная стоимость кредита в год с учётом всех комиссий</li>
+          <li>Кредитная история формируется в ПКБ (Первое кредитное бюро РК)</li>
+          <li>Никогда не бери кредит на развлечения, одежду, гаджеты ради статуса</li>
+          <li>Просрочка платежа — штраф и испорченная кредитная история</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">ГЭСВ</div><div class="term-d">Годовая эффективная ставка — реальная стоимость кредита за год</div></div>
+          <div class="term"><div class="term-t">Залог</div><div class="term-d">Имущество, которое банк может забрать при непогашении долга</div></div>
+          <div class="term"><div class="term-t">Поручитель</div><div class="term-d">Тот, кто берёт обязательство погасить долг вместо тебя</div></div>
+          <div class="term"><div class="term-t">Просрочка</div><div class="term-d">Пропуск платежа. Ведёт к штрафам и плохой кредитной истории</div></div>
+        </div>
+      </div>
+      ${quiz('fin','credit',[
+        {q:'С какого возраста можно взять кредит в банке Казахстана?',opts:['14 лет','16 лет','18 лет','21 год'],a:2,e:'Кредиты в РК выдаются только совершеннолетним — с 18 лет.'},
+        {q:'Что такое ГЭСВ?',opts:['Государственный экзамен','Реальная годовая стоимость кредита','Вид банковской карты','Система страхования'],a:1,e:'ГЭСВ — Годовая эффективная ставка вознаграждения. Реальная стоимость с учётом всех платежей.'},
+        {q:'Телефон стоит 120 000 ₸. В кредит: 3 года, итог 180 000 ₸. Стоит ли брать?',opts:['Да, удобно платить частями','Нет, переплата 60 000 ₸ — это 50%','Зависит от марки телефона','Зависит от магазина'],a:1,e:'Переплата 60 000 ₸ — это 50% сверху. Лучше накопить или купить дешевле.'},
+      ])}`,
+    invest:`
+      <div class="card">
+        <div class="card-label label-green">Теория</div>
+        <h3>Инвестиции</h3>
+        <p>Инвестиции — вложение денег для получения прибыли в будущем. В отличие от хранения наличных, инвестиции защищают от инфляции и позволяют деньгам расти. Но любые инвестиции — это риск.</p>
+        <ul class="pts">
+          <li>В Казахстане можно инвестировать через KASE (Казахстанская фондовая биржа)</li>
+          <li>Акция — доля в компании. Растёт компания — растёт цена акции</li>
+          <li>Облигация — долговая бумага с фиксированным доходом, менее рискованна</li>
+          <li>Диверсификация: не вкладывай всё в один актив — это снижает риск</li>
+          <li>Правило: инвестируй только деньги, которые не нужны тебе прямо сейчас</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">Акция</div><div class="term-d">Ценная бумага — доля владения в компании</div></div>
+          <div class="term"><div class="term-t">Облигация</div><div class="term-d">Долговая бумага с фиксированными выплатами процентов</div></div>
+          <div class="term"><div class="term-t">Дивиденды</div><div class="term-d">Часть прибыли компании, выплачиваемая акционерам</div></div>
+          <div class="term"><div class="term-t">KASE</div><div class="term-d">Казахстанская фондовая биржа — площадка для торговли ценными бумагами</div></div>
+        </div>
+      </div>
+      ${quiz('fin','invest',[
+        {q:'Что такое диверсификация инвестиций?',opts:['Вложить всё в одну акцию','Распределить деньги между разными активами','Хранить деньги наличными','Инвестировать только в золото'],a:1,e:'Диверсификация снижает риск: если один актив падает, другие могут расти.'},
+        {q:'Как называется биржа ценных бумаг в Казахстане?',opts:['NYSE','NASDAQ','KASE','Московская биржа'],a:2,e:'KASE — Kazakhstan Stock Exchange, основана в 1993 году в Алматы.'},
+        {q:'Ты получил 100 000 ₸. Что наиболее рискованно?',opts:['Открыть депозит','Купить государственные облигации','Вложить всё в акции одной компании','Распределить между несколькими активами'],a:2,e:'Вложить всё в одну компанию — максимальный риск. Банкротство = потеря всего.'},
+      ])}`,
+  };
+  return map[t]||'';
+}
+
+// LAW CONTENT
+function renderLaw(t){
+  const k=qKey('law',t);
+  if(!QS[k])QS[k]={i:0};
+  const map={
+    rights:`
+      <div class="card">
+        <div class="card-label label-blue">Теория</div>
+        <h3>Права детей и подростков в РК</h3>
+        <p>Права детей в Казахстане закреплены в Конституции РК, Законе "О правах ребёнка" (2002 г.) и Кодексе о браке и семье. Казахстан присоединился к Конвенции ООН о правах ребёнка в 1994 году.</p>
+        <ul class="pts">
+          <li>Право на бесплатное среднее образование гарантировано Конституцией</li>
+          <li>Право на защиту от насилия — любое физическое и психологическое насилие запрещено</li>
+          <li>С 14 лет можно частично распоряжаться доходами: стипендия, призы, подработка</li>
+          <li>С 16 лет можно работать официально (не более 24 ч/нед. во время учёбы)</li>
+          <li>При нарушении прав — можно обратиться к Уполномоченному по правам ребёнка</li>
+          <li>Скорую медицинскую помощь обязаны оказать независимо от наличия документов</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">Омбудсмен</div><div class="term-d">Уполномоченный по правам человека (ребёнка) — государственный защитник</div></div>
+          <div class="term"><div class="term-t">Дееспособность</div><div class="term-d">Способность самостоятельно совершать юридические действия</div></div>
+          <div class="term"><div class="term-t">Эмансипация</div><div class="term-d">Признание подростка с 16 лет полностью дееспособным по решению суда</div></div>
+          <div class="term"><div class="term-t">Опека</div><div class="term-d">Форма защиты детей, оставшихся без родителей или опекунов</div></div>
+        </div>
+      </div>
+      ${scenario('rights','Ситуация: учитель забрал телефон','Учитель забрал телефон и говорит, что вернёт только через неделю. Он отказывается звонить родителям. Что делаешь?',[
+        {t:'Жду молча — учитель имеет право',r:'bad',f:'Это нарушение твоих прав. Телефон — твоя собственность. Учитель не вправе изымать её на длительный срок без уведомления родителей.'},
+        {t:'Иду к директору и сообщаю родителям',r:'best',f:'Верно. Директор обязан разобраться. Телефон — твоя собственность, и родители должны быть уведомлены немедленно.'},
+        {t:'Грублю учителю и требую телефон',r:'mid',f:'Твои права действительно нарушены, но грубость только усугубит ситуацию. Действуй через администрацию школы.'},
+      ])}
+      ${quiz('law','rights',[
+        {q:'С какого возраста подросток может работать официально в Казахстане?',opts:['14 лет','15 лет','16 лет','18 лет'],a:2,e:'С 16 лет — можно, но не более 24 часов в неделю в период учёбы.'},
+        {q:'Куда обратиться при нарушении прав ребёнка?',opts:['Только к родителям','К омбудсмену, в полицию или органы опеки','Только в суд','Никуда — дети не имеют прав'],a:1,e:'Можно обратиться к Уполномоченному по правам ребёнка, в полицию или органы опеки и попечительства.'},
+      ])}`,
+    admin:`
+      <div class="card">
+        <div class="card-label label-blue">Теория</div>
+        <h3>Административная ответственность</h3>
+        <p>Административная ответственность в Казахстане регулируется КоАП РК. С 16 лет подросток несёт её самостоятельно. До 16 лет за нарушения отвечают родители.</p>
+        <ul class="pts">
+          <li>С 16 лет — сам несёшь административную ответственность</li>
+          <li>До 16 лет — за нарушения платят штраф родители</li>
+          <li>Мелкое хулиганство: штраф от 5 до 10 МРП</li>
+          <li>Распитие алкоголя в общественных местах до 21 года — нарушение</li>
+          <li>Вандализм: штраф + возмещение ущерба собственнику</li>
+          <li>Нарушение ПДД: переход на красный — до 5 МРП штрафа</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">КоАП РК</div><div class="term-d">Кодекс об административных правонарушениях Республики Казахстан</div></div>
+          <div class="term"><div class="term-t">МРП</div><div class="term-d">Месячный расчётный показатель — база для штрафов (в 2025 г. — 3 932 тенге)</div></div>
+          <div class="term"><div class="term-t">Протокол</div><div class="term-d">Документ, составляемый полицейским при фиксации нарушения</div></div>
+          <div class="term"><div class="term-t">Предупреждение</div><div class="term-d">Минимальное административное взыскание — официальное порицание</div></div>
+        </div>
+      </div>
+      ${quiz('law','admin',[
+        {q:'С какого возраста наступает административная ответственность в РК?',opts:['14 лет','15 лет','16 лет','18 лет'],a:2,e:'Административная ответственность наступает с 16 лет. До этого отвечают родители.'},
+        {q:'Тебе 15 лет, ты разбил витрину магазина. Кто платит штраф?',opts:['Ты сам','Твои родители','Государство','Никто не платит'],a:1,e:'До 16 лет ответственность несут родители. Но ущерб всё равно придётся возместить — за это отвечают они.'},
+        {q:'Что такое МРП в системе штрафов?',opts:['Минимальная рабочая пенсия','Месячный расчётный показатель','Муниципальный расчётный план','Минимальный размер платежа'],a:1,e:'МРП — Месячный расчётный показатель. Используется для расчёта штрафов, пособий и других выплат.'},
+      ])}`,
+    internet:`
+      <div class="card">
+        <div class="card-label label-blue">Теория</div>
+        <h3>Безопасность в интернете</h3>
+        <p>В Казахстане действует Закон "Об информатизации" и статьи Уголовного кодекса о киберпреступлениях. Нарушение закона в интернете ведёт к реальному наказанию.</p>
+        <ul class="pts">
+          <li>Взлом чужого аккаунта — ст. 205 УК РК (неправомерный доступ к информации)</li>
+          <li>Публикация чужих фото без согласия — нарушение неприкосновенности частной жизни</li>
+          <li>Кибербуллинг (систематическое преследование) может стать уголовным делом</li>
+          <li>Интернет-мошенничество — ст. 190 УК РК</li>
+          <li>Двухфакторная аутентификация (2FA) надёжно защищает аккаунт</li>
+          <li>Никому не передавай пароли — даже близким друзьям</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">Фишинг</div><div class="term-d">Кража данных через поддельные сайты и письма</div></div>
+          <div class="term"><div class="term-t">Кибербуллинг</div><div class="term-d">Систематическое преследование, угрозы или унижение в сети</div></div>
+          <div class="term"><div class="term-t">2FA</div><div class="term-d">Двухфакторная аутентификация — защита аккаунта помимо пароля</div></div>
+          <div class="term"><div class="term-t">Дроппинг</div><div class="term-d">Использование чужой карты для вывода краденых денег — соучастие в мошенничестве</div></div>
+        </div>
+      </div>
+      ${scenario('internet','Ситуация: незнакомец в сети','Незнакомый человек пишет тебе в Instagram: "Привет! Ты очень симпатичный. Давай встретимся? Только никому не говори — это наш секрет." Что делаешь?',[
+        {t:'Соглашаюсь — интересно познакомиться',r:'bad',f:'Крайне опасно. "Никому не говори" — главный признак опасного взрослого. Никогда не встречайся с незнакомцами из интернета.'},
+        {t:'Блокирую и рассказываю родителям или учителю',r:'best',f:'Правильно. Слова про "секрет" — сигнал тревоги. Нужно немедленно заблокировать и рассказать доверенному взрослому.'},
+        {t:'Продолжаю переписку, чтобы выяснить кто это',r:'mid',f:'Лучше не вступать в контакт вовсе. Заблокируй и расскажи взрослым — любая переписка может быть опасна.'},
+      ])}
+      ${quiz('law','internet',[
+        {q:'Ты нашёл чужие фото и опубликовал их без разрешения. Это:',opts:['Нормально, раз они уже в сети','Нарушение права на частную жизнь','Разрешено для публичных людей','Нарушение только морали, не закона'],a:1,e:'Публикация чужих фото без согласия — нарушение ст. 145 ГК РК о неприкосновенности частной жизни.'},
+        {q:'Тебе предлагают подработку: перевести деньги через свою карту. Это:',opts:['Отличная подработка для студента','Скорее всего дроппинг — соучастие в мошенничестве','Законная курьерская работа','Обычный банковский перевод'],a:1,e:'Дроппинг — это вывод краденых денег через чужую карту. Ты становишься соучастником преступления.'},
+      ])}`,
+    everyday:`
+      <div class="card">
+        <div class="card-label label-blue">Теория</div>
+        <h3>Законы повседневной жизни</h3>
+        <p>Закон сопровождает нас везде: в магазине, транспорте, на улице и в школе. Знание бытовых прав помогает защитить себя в реальных ситуациях.</p>
+        <ul class="pts">
+          <li>Закон о защите прав потребителей: можно вернуть товар в течение 14 дней</li>
+          <li>Бракованный товар обязаны принять обратно или заменить вне зависимости от срока</li>
+          <li>Магазин обязан выдать чек — это твоё доказательство покупки</li>
+          <li>При задержании полицией: имеешь право молчать и требовать адвоката</li>
+          <li>Задержание без протокола — не более 3 часов по закону</li>
+          <li>Шум ночью (с 23:00 до 07:00) — административное правонарушение</li>
+        </ul>
+        <div class="terms">
+          <div class="term"><div class="term-t">Права потребителя</div><div class="term-d">Право на качественный товар, информацию о нём и возврат в 14 дней</div></div>
+          <div class="term"><div class="term-t">Задержание</div><div class="term-d">Кратковременное ограничение свободы — не более 3 часов без протокола</div></div>
+          <div class="term"><div class="term-t">Презумпция невиновности</div><div class="term-d">Ты невиновен, пока суд не докажет обратное</div></div>
+          <div class="term"><div class="term-t">Право на молчание</div><div class="term-d">Ты не обязан давать показания против себя</div></div>
+        </div>
+      </div>
+      ${scenario('everyday','Ситуация: сломанный товар','Ты купил наушники. Дома оказалось, что один из них не работает. В магазине говорят: "Возврату не подлежит". Что делаешь?',[
+        {t:'Принимаю — раз написано, значит правда',r:'bad',f:'Неверно. Закон РК о защите прав потребителей обязывает магазин принять бракованный товар, заменить или вернуть деньги.'},
+        {t:'Требую книгу жалоб и обращаюсь в защиту прав потребителей',r:'best',f:'Верно. Бракованный товар обязаны принять. Можно обратиться в Комитет по защите прав потребителей РК.'},
+        {t:'Скандалю с продавцом и отказываюсь уходить',r:'mid',f:'Твои права нарушены, но скандал не поможет. Лучше зафиксировать нарушение официально — через жалобу или госорган.'},
+      ])}
+      ${quiz('law','everyday',[
+        {q:'В течение скольких дней можно вернуть качественный товар в РК?',opts:['7 дней','14 дней','30 дней','Нельзя вернуть'],a:1,e:'По Закону РК о защите прав потребителей непродовольственный товар можно вернуть в течение 14 дней.'},
+        {q:'Полицейский останавливает тебя и требует объяснить, где ты был. Обязан ли ты отвечать?',opts:['Да, обязан ответить на все вопросы','Нет, имею право хранить молчание','Только если есть протокол','Только совершеннолетние имеют такое право'],a:1,e:'Ты имеешь право на молчание. Документы — предъявить, давать объяснения — не обязан.'},
+      ])}`,
+  };
+  return map[t]||'';
+}
+
+
+// LEADERBOARD
+const LB_USERS = [
+  {name:'Aruzhan', score:480, done:28},
+  {name:'Dias', score:420, done:25},
+  {name:'Madi', score:360, done:22},
+  {name:'Amina', score:310, done:19},
+  {name:'Nursultan', score:270, done:17},
+  {name:'Sanzhar', score:220, done:14},
+  {name:'Alina', score:180, done:11},
+  {name:'Timur', score:140, done:9},
+];
+
+function renderLeaderboard(){
+  const el=document.getElementById('leaderboard');
+  const rankEl=document.getElementById('lb-my-rank');
+  if(!el || !rankEl)return;
+
+  const mine={name:'Ты', score:score, done:Object.keys(done).length};
+  const all=[...LB_USERS, mine].sort((a,b)=>b.score-a.score);
+  const myRank=all.findIndex(x=>x===mine)+1;
+  rankEl.textContent='#'+myRank;
+
+  // Показываем верхушку и всегда оставляем пользователя в таблице.
+  let rows=all.slice(0,8);
+  if(!rows.includes(mine)){
+    rows=rows.slice(0,7);
+    rows.push(mine);
+  }
+
+  el.innerHTML=rows.map((u,i)=>`
+    <div class="lb-row ${u===mine?'me':''}">
+      <div class="lb-rank">#${all.indexOf(u)+1}</div>
+      <div>
+        <div class="lb-name">${u.name}</div>
+        <div class="lb-done">${u.done} решённых задач</div>
+      </div>
+      <div class="lb-score">${u.score} XP</div>
+    </div>
+  `).join('');
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('score-display').textContent=score;
+  renderAch();
+  updateProg();
+  renderLeaderboard();
+  // preload fin topic
+  openSection('fin');
+  showScreen('home');
+});
+</script>
+</body>
+</html>
